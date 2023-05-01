@@ -7,7 +7,8 @@ class people:
         print('%s이 걷고 있습니다' %self.name)
 
 
-
 Lee = people()
 
+Lee.walk()
+Lee.name = str(input())
 Lee.walk()

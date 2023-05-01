@@ -7,8 +7,14 @@ class people:
         print('%s이 걷고 있습니다' %self.name)
 
 
+
+import keyword
+
 Lee = people()
 
-Lee.walk()
-Lee.name = str(input())
-Lee.walk()
+print(5%2)
+print(keyword.kwlist)
+
+c = {'age':30, 'name': '아잉'}
+
+print(c['age']>10)

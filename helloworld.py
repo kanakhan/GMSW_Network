@@ -1,30 +1,29 @@
-import math
+import numpy as np
 
-class people:
-    age = math.sin(40)
-    name = '사람'
-    def walk(self):
-        print('%s이 걷고 있습니다' %self.name)
+class Grandmother:
 
+    def __init__(self, name = None, age = None):
 
+        if name is not None and age is not None:
+            self.name = name
+            self.age = age
+        else:
+            self.name = "Default"
+            self.age = 80
 
-import keyword
-
-Lee = people()
-
-print(5%2)
-print(keyword.kwlist)
-
-c = {'age':30, 'name': '아잉'}
-
-print(c['age']>19)
-
-if(c['age']>19):
-    print('%s님은 현재 성인입니다.' %c['name'])
+    def printSelf(self):
+        print(self.name)
+        print(self.age)
 
 
-a = [1,2,3,4,5]
-b = [x * 2 for x in a]
-c = [x * 2 for x in b]
+a = Grandmother("Name1", 40)
 
-print(c)
+a.printSelf()
+
+numbers = [1,2,3,4,5]
+odd = filter(lambda x: x%2 == 1, numbers)
+
+print(type(list(odd)))
+
+print(sum(numbers))
+

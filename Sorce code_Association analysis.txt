@@ -1,0 +1,88 @@
+import pandas as pd
+import numpy as np
+import re
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+import warnings
+warnings.filterwarnings("ignore")
+
+%matplotlib inline 
+%config InlineBackend.figure_format = 'retina'
+
+df = pd.read_csv('kjjcs_keywords.csv', encoding="utf8")
+
+df[:10]
+
+def text_cleaning(text):
+    hangul = re.compile('[^ ㄱ-ㅣ가-힣]+') # 한글의 정규표현식을 나타냅니다.
+    result = hangul.sub('', text)
+    return result
+
+df['ko_keywords'] = df['keywords'].apply(lambda x: text_cleaning(x))
+df.head()
+
+from konlpy.tag import Okt
+from collections import Counter
+
+korean_stopwords_path = "korean_stopwords.txt"
+with open(korean_stopwords_path, encoding='utf8') as f:
+    stopwords = f.readlines()
+stopwords = [x.strip() for x in stopwords]
+print(stopwords[:20])
+
+kjjcs_stopwords = ['대한', '관한', '통해', '따른', '중심', '관련', '통한', '년대', '로서', '이후', '정도', '사이', '파적']
+for stopword in kjjcs_stopwords:
+    stopwords.append(stopword)
+
+def get_nouns(x):
+    nouns_tagger = Okt()
+    nouns = nouns_tagger.nouns(x)
+    
+    nouns = [noun for noun in nouns if len(noun) > 1]
+    
+    nouns = [noun for noun in nouns if noun not in stopwords]
+    
+    return nouns
+
+df['nouns'] = df['ko_keywords'].apply(lambda x: get_nouns(x))
+print(df.shape)
+df.head()
+
+!pip install apriori apyori
+
+from apyori import apriori
+
+transactions = df['nouns'].tolist()
+transactions = [transaction for transaction in transactions if transaction]
+print(transactions)
+
+results = list(apriori(transactions,min_support=0.01, min_confidence=0.01, min_lift=2, max_length=2))
+print(results)
+
+columns = ['source', 'target', 'support']
+network_df = pd.DataFrame(columns=columns)
+
+for result in results:
+    if len(result.items) == 2:
+        items = [x for x in result.items]
+        row = [items[0], items[1], result.support]
+        series = pd.Series(row, index=network_df.columns)
+        network_df = network_df.append(series, ignore_index=True)
+
+network_df.head()
+
+network_df
+
+
+
+
+
+
+
+
+
+
+
+
+
